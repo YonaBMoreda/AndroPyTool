@@ -467,6 +467,10 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
     ############################################################
     # EXPORTING TO CSV
     ############################################################
+    export_csv_file(database, export_csv, flowdroid_folder, output_folder)
+
+
+def export_csv_file(database, export_csv, flowdroid_folder, output_folder):
     if export_csv is not None:
         set_permissions = set()
         set_opcodes = set()
@@ -479,7 +483,7 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
 
         for apk_key in tqdm(database.keys()):
             apk_dict = database[apk_key]
-            
+
             if len(apk_key.split("/")) > 1:
                 kind = apk_key.split("/")[0]
                 hash_app = apk_key.split("/")[1]
@@ -491,20 +495,20 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
             set_opcodes.update(apk_dict["Static_analysis"]["Opcodes"])
             set_apicalls.update(apk_dict["Static_analysis"]["API calls"])
             set_systemcommands.update(apk_dict["Static_analysis"]["System commands"])
-            
+
             for activity in apk_dict["Static_analysis"]["Activities"]:
                 if apk_dict["Static_analysis"]["Activities"][activity] is not None and \
-                    len(apk_dict["Static_analysis"]["Activities"][activity]) > 0:
+                        len(apk_dict["Static_analysis"]["Activities"][activity]) > 0:
                     set_intents_activities.update(apk_dict["Static_analysis"]["Activities"][activity])
 
             for service in apk_dict["Static_analysis"]["Services"]:
                 if apk_dict["Static_analysis"]["Services"][service] is not None and \
-                    len(apk_dict["Static_analysis"]["Services"][service]) > 0:
+                        len(apk_dict["Static_analysis"]["Services"][service]) > 0:
                     set_intents_services.update(apk_dict["Static_analysis"]["Services"][service])
 
             for receiver in apk_dict["Static_analysis"]["Receivers"]:
                 if apk_dict["Static_analysis"]["Receivers"][receiver] is not None and \
-                    len(apk_dict["Static_analysis"]["Receivers"][receiver]) > 0:
+                        len(apk_dict["Static_analysis"]["Receivers"][receiver]) > 0:
                     set_intents_receivers.update(apk_dict["Static_analysis"]["Receivers"][receiver])
 
             set_api_packages.update(apk_dict["Static_analysis"]["API packages"])
@@ -522,7 +526,6 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
             list_apicalls[i] = ".".join(apicall.encode('ascii', 'ignore').split(".")[:-1])
 
         list_apicalls = list(set(list_apicalls))
-        
 
         flowdroid_fields = []
         if flowdroid_folder:
@@ -530,7 +533,7 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
             flowdroid_fields = apk_dict_example["Static_analysis"]["FlowDroid"].keys()
             if "Sources\\Sinks" in flowdroid_fields:
                 del flowdroid_fields[flowdroid_fields.index("Sources\\Sinks")]
-        
+
         flowdroid_fields_matrix = [(x, y) for x in flowdroid_fields for y in flowdroid_fields]
 
         list_rows = []
@@ -543,7 +546,7 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
         rows_intents_services = []
         rows_intents_receivers = []
         rows_api_packages = []
-                
+
         for apk_key in tqdm(database.keys()):
             apk_dict = database[apk_key]
             label = None
@@ -553,7 +556,7 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
             else:
                 label = ""
                 hash_app = apk_key
-            
+
             list_permissions_filled = [0 for x in range(len(list_permissions))]
             for i, item in enumerate(list_permissions):
                 if item.replace(" ", "") in apk_dict["Static_analysis"]["Permissions"]:
@@ -601,9 +604,9 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
                 source, sink = item[0], item[1]
                 flowdroid_fields_matrix_filled[i] = flow_df[source][sink]
             complete_row = [label] + list_permissions_filled + list_opcodes_filled + list_apicalls_filled + \
-                        list_systemcommands_filled + list_intents_activities_filled + \
-                        list_intents_services_filled + list_intents_receivers_filled + list_api_packages_filled + \
-                        flowdroid_fields_matrix_filled
+                           list_systemcommands_filled + list_intents_activities_filled + \
+                           list_intents_services_filled + list_intents_receivers_filled + list_api_packages_filled + \
+                           flowdroid_fields_matrix_filled
 
             rows_permissions.append(list_permissions_filled)
             rows_opcodes.append(list_opcodes_filled)
@@ -627,16 +630,17 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
         flowdroid_fields_matrix_strings = ["FLOWDROID-" + x[0] + "-" + x[1] for x in flowdroid_fields_matrix]
 
         complete_list_fields = ["label"] + list_permissions + list_opcodes + list_apicalls + \
-                       list_systemcommands + list_intents_activities + list_intents_services + list_intents_receivers + \
-                       list_api_packages + flowdroid_fields_matrix_strings
+                               list_systemcommands + list_intents_activities + list_intents_services + list_intents_receivers + \
+                               list_api_packages + flowdroid_fields_matrix_strings
 
-        with open(output_folder + "/" +  export_csv, 'wb') as csv_file:
+        with open(output_folder + "/" + export_csv, 'wb') as csv_file:
 
             csvwriter = csv.writer(csv_file, delimiter=",")
             csvwriter.writerow(complete_list_fields)
             print "WRITING CSV FILE..."
             for row in tqdm(list_rows):
                 csvwriter.writerow(row)
+
 
 if __name__ == '__main__':
     main()
