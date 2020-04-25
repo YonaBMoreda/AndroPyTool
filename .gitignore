@@ -1,6 +1,10 @@
 my_env/
 .vscode
 
+apkFolder/
+deactivate/
+DroidBox_AndroPyTool/*
+avclass/*
 andropytool_env/
 droidbox_env/
 .idea/

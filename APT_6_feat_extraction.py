@@ -21,7 +21,6 @@ from argparse import RawTextHelpFormatter
 from androguard.core.bytecodes import apk
 from avclass_caller import get_avclass_label
 
-
 ############################################################
 # VARIABLES
 ############################################################
@@ -33,6 +32,8 @@ OUTPUT_FILE_GLOBAL_JSON = "OUTPUT_ANDROPY_" + TIME_EXECUTION + ".json"
 OUTPUT_FILE_GLOBAL_CSV = "OUTPUT_ANDROPY_" + TIME_EXECUTION + ".csv"
 
 POSSIBLE_DYNAMIC_FILES_EXTENSIONS = [".csv", ".json", ".txt"]
+
+
 ############################################################
 
 
@@ -173,8 +174,9 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
         apk_name_no_extensions = "".join(apk_filename.split("/")[-1].split(".")[:-1])
 
         if os.path.isfile(join_dir(output_folder, apk_filename.split("/")[-1].replace('.apk', '-analysis.json'))):
-            database[apk_filename.replace('.apk', '')] = json.load(open(join_dir(output_folder, apk_filename.split("/")[-1].
-                                                                            replace('.apk', '-analysis.json'))))
+            database[apk_filename.replace('.apk', '')] = json.load(
+                open(join_dir(output_folder, apk_filename.split("/")[-1].
+                              replace('.apk', '-analysis.json'))))
             continue
 
         pre_static_dict = collections.OrderedDict()
@@ -277,7 +279,6 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
                     API_packages_dict[package_chosen] += list_smali_api_calls[api_call]
 
         static_analysis_dict['API packages'] = API_packages_dict
-        
 
         # System commands
         list_system_commands = read_system_commands(list_smali_strings, API_SYSTEM_COMMANDS)
@@ -293,8 +294,6 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
         # Intents of activities
         intents_activities = collections.OrderedDict()
         for activity in list_activities:
-
-            
             intents_activities[activity] = check_for_intents(join_dir(analyze_apk.replace('.apk', ''),
                                                                       'AndroidManifest.xml'),
                                                              activity, 'activity')
@@ -327,7 +326,8 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
         dynamic_analysis_dict = collections.OrderedDict()
 
         if dynamic_analysis_folder and isdir(dynamic_analysis_folder):
-            dynamic_analysis_folders = [join_dir(dynamic_analysis_folder, x) for x in listdir(str(dynamic_analysis_folder)) if
+            dynamic_analysis_folders = [join_dir(dynamic_analysis_folder, x) for x in
+                                        listdir(str(dynamic_analysis_folder)) if
                                         isdir(join_dir(dynamic_analysis_folder, x))]
 
             for dynamic_analysis_tool_folder in dynamic_analysis_folders:
@@ -364,7 +364,7 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
 
                 # Setting column names with the first column
                 data_flowdroid_csv.index = data_flowdroid_csv["Sources\\Sinks"]
-                if "Sources\\Sinks" in data_flowdroid_csv.columns:        
+                if "Sources\\Sinks" in data_flowdroid_csv.columns:
                     del data_flowdroid_csv["Sources\\Sinks"]
 
                 flowdroid_field = data_flowdroid_csv.to_dict()
@@ -386,8 +386,6 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
                 pre_static_dict["VT_engines"] = len(load_vt_json["scans"].keys())
             else:
                 virus_total_dict = ""
-
-        
 
         ############################################################
         # GETTING AVCLASS LABEL IF VIRUSTOTAL ANALYSIS IS AVAILABLE
@@ -464,12 +462,12 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
 
         coll.insert_one(database).inserted_id
 
-    ############################################################
-    # EXPORTING TO CSV
-    ############################################################
     export_csv_file(database, export_csv, flowdroid_folder, output_folder)
 
 
+############################################################
+# EXPORTING TO CSV
+############################################################
 def export_csv_file(database, export_csv, flowdroid_folder, output_folder):
     if export_csv is not None:
         set_permissions = set()
