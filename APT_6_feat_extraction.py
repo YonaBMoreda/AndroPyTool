@@ -112,7 +112,6 @@ def features_extractor(apks_directory, single_analysis, dynamic_analysis_folder,
                        system_commands_file, label, avclass, export_mongodb, export_csv):
     """
     Extracts features from a set of samples
-
     Parameters
     ----------
     :param apks_directory: Folder containing apk files
